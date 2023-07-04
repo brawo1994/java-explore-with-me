@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="ewm-main" target="11" />
+      <module name="ewm-stats" target="11" />
+      <module name="stats-client" target="11" />
+      <module name="stats-dto" target="11" />
+      <module name="stats-server" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ewm-main" options="-parameters" />
+      <module name="ewm-stats" options="" />
+      <module name="stats-client" options="-parameters" />
+      <module name="stats-dto" options="-parameters" />
+      <module name="stats-server" options="-parameters" />
+    </option>
+  </component>
+</project>
