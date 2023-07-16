@@ -42,7 +42,7 @@ public class EventAdminController {
                                                  @RequestParam(name = "rangeEnd", required = false)
                                                      @DateTimeFormat(pattern = DATE_TIME_FORMATTER_PATTERN)
                                                      LocalDateTime rangeEnd,
-                                                 @RequestParam(name = "from" , defaultValue = "0") Integer from,
+                                                 @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                  @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.info("Received GET request /admin/events with params: users {}, states {}, categories {}, rangeStart " +
                 "{}, rangeEnd {}, from {}, size {}", users, states, categories, rangeStart, rangeEnd, from, size);

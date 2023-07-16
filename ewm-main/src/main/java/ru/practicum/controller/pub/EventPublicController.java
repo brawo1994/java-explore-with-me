@@ -41,7 +41,7 @@ public class EventPublicController {
                                                      Boolean onlyAvailable,
                                                   @RequestParam(name = "sort", required = false)
                                                      EventSort sort,
-                                                  @RequestParam(name = "from" , defaultValue = "0") Integer from,
+                                                  @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                   @RequestParam(name = "size", defaultValue = "10") Integer size,
                                                   HttpServletRequest request) {
         log.info("Received GET request /events with params: text {}, categories {}, paid {}, rangeStart " +

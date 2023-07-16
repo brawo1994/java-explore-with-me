@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
 
-    List<Request> findByRequester (User requester);
+    List<Request> findByRequester(User requester);
 
     List<Request> findByEventAndStatus(Event event, State status);
 
