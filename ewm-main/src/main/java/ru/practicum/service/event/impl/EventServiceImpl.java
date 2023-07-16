@@ -79,7 +79,7 @@ public class EventServiceImpl implements EventService {
         Category category = getCategoryIfExistOrThrow(eventDto.getCategory());
         Event event = eventRepository.save(EventMapper.toModel(eventDto, category, user, now, State.PENDING));
         event.setViews(0L);
-        event.setViews(0L);
+        event.setConfirmedRequests(0L);
         log.info("Event with id: {} added to DB", event.getId());
         return EventMapper.toFullDto(event);
     }

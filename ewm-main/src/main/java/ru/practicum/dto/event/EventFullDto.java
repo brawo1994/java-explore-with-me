@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.model.enums.State;
 
@@ -20,7 +21,7 @@ public class EventFullDto {
 
     private String annotation;
 
-    private Long category;
+    private CategoryDto category;
 
     private Long confirmedRequests;
 

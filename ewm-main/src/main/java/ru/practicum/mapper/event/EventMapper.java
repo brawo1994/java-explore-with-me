@@ -38,7 +38,7 @@ public class EventMapper {
     public static EventFullDto toFullDto(Event event) {
         return EventFullDto.builder()
                 .annotation(event.getAnnotation())
-                .category(event.getCategory().getId())
+                .category(CategoryMapper.toDto(event.getCategory()))
                 .confirmedRequests(event.getConfirmedRequests())
                 .createdOn(event.getCreatedOn())
                 .description(event.getDescription())

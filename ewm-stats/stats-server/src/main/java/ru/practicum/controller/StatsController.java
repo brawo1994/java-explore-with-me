@@ -31,7 +31,8 @@ public class StatsController {
                                        @RequestParam String end,
                                        @RequestParam(required = false) List<String> uris,
                                        @RequestParam(defaultValue = "false") Boolean unique) {
-        log.info("Received GET request /stats with parameters: start = {}, end = {}, uris = {}, unique = {}", start, end, uris, unique);
+        log.info("Received GET request /stats with parameters: start = {}, end = {}, uris = {}, unique = {}", start,
+                end, uris, unique);
         return statsService.getStats(LocalDateTime.parse(start, FORMATTER),
                 LocalDateTime.parse(end, FORMATTER), uris, unique);
     }
