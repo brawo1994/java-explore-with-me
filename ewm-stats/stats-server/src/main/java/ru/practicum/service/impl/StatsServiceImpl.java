@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
+import ru.practicum.exeption.BadRequestException;
 import ru.practicum.mapper.EndpointHitMapper;
 import ru.practicum.model.EndpointHit;
 import ru.practicum.repository.StatsRepository;
@@ -30,6 +31,11 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+        if (start.isAfter(end)) {
+            throw new BadRequestException("Дата и время начала диапазона не может быть меньше Даты и времени "
+                    + "конца диапазона");
+
+        }
         if (uris == null) {
             if (Boolean.TRUE.equals(unique)) {
                 return statsRepository.getHitsWithUnique(start, end);

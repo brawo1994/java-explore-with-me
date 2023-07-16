@@ -2,6 +2,7 @@ package ru.practicum.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
@@ -21,6 +22,7 @@ public class StatsController {
     public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @PostMapping("/hit")
+    @ResponseStatus(HttpStatus.CREATED)
     public EndpointHitDto create(@RequestBody EndpointHitDto endpointHitDto) {
         log.info("Received POST request /hit with body: {}", endpointHitDto.toString());
         return statsService.create(endpointHitDto);
@@ -31,7 +33,8 @@ public class StatsController {
                                        @RequestParam String end,
                                        @RequestParam(required = false) List<String> uris,
                                        @RequestParam(defaultValue = "false") Boolean unique) {
-        log.info("Received GET request /stats with parameters: start = {}, end = {}, uris = {}, unique = {}", start, end, uris, unique);
+        log.info("Received GET request /stats with parameters: start = {}, end = {}, uris = {}, unique = {}", start,
+                end, uris, unique);
         return statsService.getStats(LocalDateTime.parse(start, FORMATTER),
                 LocalDateTime.parse(end, FORMATTER), uris, unique);
     }
