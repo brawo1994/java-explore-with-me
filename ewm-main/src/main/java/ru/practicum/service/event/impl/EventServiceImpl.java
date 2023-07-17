@@ -262,7 +262,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void checkEventForNeedRequestModeration (Event event) {
+    private void checkEventForNeedRequestModeration(Event event) {
         if (Boolean.FALSE.equals(event.getRequestModeration()) || event.getParticipantLimit() == 0) {
             throw new ConstraintViolationException("Для события не требуется подтверждения заявок на участик");
         }
