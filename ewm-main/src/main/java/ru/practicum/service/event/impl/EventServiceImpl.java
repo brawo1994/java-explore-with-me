@@ -187,7 +187,7 @@ public class EventServiceImpl implements EventService {
                 rangeEnd, State.PUBLISHED, pagination);
 
         Map<Long, Long> hits = getStats(events);
-        events.forEach(event -> event.setViews(hits.get(event.getId())));
+        events.forEach((Event event) -> event.setViews(hits.get(event.getId())));
 
         for (Event event : events) {
             event.setConfirmedRequests(getConfirmedRequestsByEvent(event));
@@ -196,7 +196,7 @@ public class EventServiceImpl implements EventService {
         List<EventShortDto> shortDtoList;
         if (Boolean.TRUE.equals(onlyAvailable)) {
             shortDtoList = events.stream()
-                    .filter(e -> e.getConfirmedRequests() < e.getParticipantLimit())
+                    .filter((Event event) -> event.getConfirmedRequests() < event.getParticipantLimit())
                     .map(EventMapper::toShortDto)
                     .collect(Collectors.toList());
         } else {
@@ -237,9 +237,8 @@ public class EventServiceImpl implements EventService {
     public RequestUpdateResponseDto changeRequestsState(Long userId, Long eventId,
                                                         RequestUpdateRequestDto requestUpdateRequestDto) {
         Event event = getEventIfExistAndUserIdIsOwnerOrThrow(eventId, userId);
-        if (Boolean.FALSE.equals(event.getRequestModeration()) || event.getParticipantLimit() == 0) {
-            throw new ConstraintViolationException("Для события не требуется подтверждения заявок на участик");
-        }
+
+        checkEventForNeedRequestModeration(event);
 
         List<Request> requests = new ArrayList<>();
         for (Long requestId : requestUpdateRequestDto.getRequestIds()) {
@@ -252,35 +251,53 @@ public class EventServiceImpl implements EventService {
             }
         }
 
-        List<RequestDto> confirmedRequests = new ArrayList<>();
-        List<RequestDto> rejectedRequests = new ArrayList<>();
-
-        long confirmedRequestsCount = requestRepository.findByEventAndStatus(event, State.CONFIRMED).size();
-        Long participantLimit = event.getParticipantLimit();
-
         if (requestUpdateRequestDto.getStatus().equals(State.REJECTED.toString())) {
-            for (Request request : requests) {
-                request.setStatus(State.REJECTED);
-                rejectedRequests.add(RequestMapper.toDto(requestRepository.save(request)));
-            }
+            return changeRequestsStateToRejected(requests);
         } else if (requestUpdateRequestDto.getStatus().equals(State.CONFIRMED.toString())) {
-            if (participantLimit != 0 && participantLimit <= confirmedRequestsCount) {
-                throw new ConstraintViolationException("The participant limit has been reached");
-            }
-            for (Request request : requests) {
-                if (participantLimit == 0 || participantLimit > confirmedRequestsCount) {
-                    request.setStatus(State.CONFIRMED);
-                    confirmedRequests.add(RequestMapper.toDto(requestRepository.save(request)));
-                    confirmedRequestsCount++;
-                } else {
-                    request.setStatus(State.REJECTED);
-                    rejectedRequests.add(RequestMapper.toDto(requestRepository.save(request)));
-                }
-            }
+            Long confirmedRequestsCount = (long) requestRepository.findByEventAndStatus(event, State.CONFIRMED).size();
+            Long participantLimit = event.getParticipantLimit();
+            return changeRequestsStateToConfirmed(requests, confirmedRequestsCount, participantLimit);
         } else {
             throw new BadStateException("Неожидаемое значение в поле status");
         }
+    }
 
+    private void checkEventForNeedRequestModeration (Event event) {
+        if (Boolean.FALSE.equals(event.getRequestModeration()) || event.getParticipantLimit() == 0) {
+            throw new ConstraintViolationException("Для события не требуется подтверждения заявок на участик");
+        }
+    }
+
+    private RequestUpdateResponseDto changeRequestsStateToRejected(List<Request> requests) {
+        List<RequestDto> rejectedRequests = new ArrayList<>();
+        for (Request request : requests) {
+            request.setStatus(State.REJECTED);
+            rejectedRequests.add(RequestMapper.toDto(requestRepository.save(request)));
+        }
+        return RequestUpdateResponseDto.builder()
+                .confirmedRequests(new ArrayList<>())
+                .rejectedRequests(rejectedRequests)
+                .build();
+    }
+
+    private RequestUpdateResponseDto changeRequestsStateToConfirmed(List<Request> requests,
+                                                                    Long confirmedRequestsCount,
+                                                                    Long participantLimit) {
+        List<RequestDto> confirmedRequests = new ArrayList<>();
+        List<RequestDto> rejectedRequests = new ArrayList<>();
+        if (participantLimit != 0 && participantLimit <= confirmedRequestsCount) {
+            throw new ConstraintViolationException("The participant limit has been reached");
+        }
+        for (Request request : requests) {
+            if (participantLimit == 0 || participantLimit > confirmedRequestsCount) {
+                request.setStatus(State.CONFIRMED);
+                confirmedRequests.add(RequestMapper.toDto(requestRepository.save(request)));
+                confirmedRequestsCount++;
+            } else {
+                request.setStatus(State.REJECTED);
+                rejectedRequests.add(RequestMapper.toDto(requestRepository.save(request)));
+            }
+        }
         return RequestUpdateResponseDto.builder()
                 .confirmedRequests(confirmedRequests)
                 .rejectedRequests(rejectedRequests)
@@ -380,7 +397,7 @@ public class EventServiceImpl implements EventService {
         final String eventsUri = "/events/";
 
         List<String> uris = events.stream()
-                .map(event -> eventsUri + event.getId())
+                .map((Event event) -> eventsUri + event.getId())
                 .collect(Collectors.toList());
 
         ResponseEntity<Object> response = statClient.getStats(min, max, String.join(",", uris), true);

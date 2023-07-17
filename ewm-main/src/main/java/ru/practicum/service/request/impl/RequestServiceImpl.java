@@ -56,7 +56,7 @@ public class RequestServiceImpl implements RequestService {
             throw new ConstraintViolationException("Количество запросов в событие достигло максимума");
         }
 
-        requestRepository.findByEventAndRequester(event, user).ifPresent(request -> {
+        requestRepository.findByEventAndRequester(event, user).ifPresent((Request request) -> {
             throw new ConstraintViolationException("Запрос уже существует");
         });
 
