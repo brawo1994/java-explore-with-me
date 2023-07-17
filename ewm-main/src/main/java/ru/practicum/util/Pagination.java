@@ -6,6 +6,9 @@ import org.springframework.data.domain.Sort;
 import java.util.Objects;
 
 public final class Pagination extends PageRequest {
+
+    private static final long serialVersionUID = 1L;
+
     final int from;
 
     public Pagination(int from, int size, Sort sort) {

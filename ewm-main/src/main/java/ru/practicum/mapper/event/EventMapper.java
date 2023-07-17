@@ -12,7 +12,7 @@ import ru.practicum.model.user.User;
 
 import java.time.LocalDateTime;
 
-public class EventMapper {
+public final class EventMapper {
 
     private EventMapper() {
         throw new IllegalStateException("Utility class");
